@@ -23,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _hidePassword = true;
   bool _loading = false;
-  String? _error;
 
   @override
   void dispose() {
@@ -34,10 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    setState(() => _loading = true);
     try {
       await context.read<AuthProvider>().signIn(
         _emailController.text,
@@ -45,7 +41,21 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       // AuthGate shows the app automatically once the session exists.
     } on AppException catch (e) {
-      if (mounted) setState(() => _error = e.message);
+      if (mounted) {
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Login failed'),
+            content: Text(e.message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     }
     if (mounted) setState(() => _loading = false);
   }
@@ -59,7 +69,6 @@ class _LoginScreenState extends State<LoginScreen> {
         key: _formKey,
         child: Column(
           children: [
-            if (_error != null) FormErrorBox(message: _error!),
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,

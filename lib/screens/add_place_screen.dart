@@ -60,7 +60,10 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open the photo picker.')),
+          const SnackBar(
+            content: Text('Could not open the photo picker.'),
+            duration: Duration(seconds: 3),
+          ),
         );
       }
     }
@@ -308,7 +311,9 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
               backgroundColor: Colors.white.withValues(alpha: 0.9),
             ),
             tooltip: 'Remove photo',
-            onPressed: _saving ? null : () => setState(() => _pickedImage = null),
+            onPressed: _saving
+                ? null
+                : () => setState(() => _pickedImage = null),
             icon: const Icon(Icons.close_rounded, color: AppColors.forest),
           ),
         ),
